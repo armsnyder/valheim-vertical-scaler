@@ -1,0 +1,24 @@
+# permissions for end users to edit valheimservers.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: valheimserver-editor-role
+rules:
+- apiGroups:
+  - valheim.zingerweb.services
+  resources:
+  - valheimservers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - valheim.zingerweb.services
+  resources:
+  - valheimservers/status
+  verbs:
+  - get
