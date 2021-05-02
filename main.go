@@ -32,7 +32,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	valheimv1beta1 "github.com/armsnyder/valheim-server/api/v1beta1"
-	"github.com/armsnyder/valheim-server/controllers"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -78,18 +77,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controllers.ValheimServerReconciler{
-		Client: mgr.GetClient(),
-		Log:    ctrl.Log.WithName("controllers").WithName("ValheimServer"),
-		Scheme: mgr.GetScheme(),
-	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "ValheimServer")
-		os.Exit(1)
-	}
-	if err = (&valheimv1beta1.ValheimServer{}).SetupWebhookWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create webhook", "webhook", "ValheimServer")
-		os.Exit(1)
-	}
 	//+kubebuilder:scaffold:builder
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
