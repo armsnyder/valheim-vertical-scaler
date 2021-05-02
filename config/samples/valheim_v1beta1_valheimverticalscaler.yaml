@@ -1,0 +1,15 @@
+apiVersion: valheim.zingerweb.services/v1beta1
+kind: ValheimVerticalScaler
+metadata:
+  name: valheimverticalscaler-sample
+spec:
+  scale: Down
+  k8sDeployment:
+    name: valheim-server
+    gameFilesVolumeName: gamefiles
+  aws:
+    region: us-west-1
+    credentialSecretName: valheim-server-aws-creds
+    domain: valheim.example.com
+    instanceID: i-1234567890abcdef0
+    privateKeySecretName: valheim-server-aws-ssh

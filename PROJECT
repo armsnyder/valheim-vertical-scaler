@@ -4,4 +4,13 @@ layout:
 projectName: valheim-server
 repo: github.com/armsnyder/valheim-server
 resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: zingerweb.services
+  group: valheim
+  kind: ValheimVerticalScaler
+  path: github.com/armsnyder/valheim-server/api/v1beta1
+  version: v1beta1
 version: "3"

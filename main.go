@@ -32,6 +32,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	valheimv1beta1 "github.com/armsnyder/valheim-server/api/v1beta1"
+	"github.com/armsnyder/valheim-server/controllers"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -77,6 +78,14 @@ func main() {
 		os.Exit(1)
 	}
 
+	if err = (&controllers.ValheimVerticalScalerReconciler{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("controllers").WithName("ValheimVerticalScaler"),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "ValheimVerticalScaler")
+		os.Exit(1)
+	}
 	//+kubebuilder:scaffold:builder
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
