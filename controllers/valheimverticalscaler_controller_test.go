@@ -61,6 +61,27 @@ var _ = Describe("ValheimVerticalScaler controller", func() {
 			}
 		}
 
+		defaultVVS := func() *valheimv1beta1.ValheimVerticalScaler {
+			return &valheimv1beta1.ValheimVerticalScaler{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      vvsName,
+					Namespace: namespace.Name,
+				},
+				Spec: valheimv1beta1.ValheimVerticalScalerSpec{
+					K8sDeployment: valheimv1beta1.K8sDeployment{
+						Name: deploymentName,
+					},
+					AWS: valheimv1beta1.AWS{
+						Region:               "us-west-2",
+						Domain:               "valheim-server-aws-creds",
+						CredentialSecretName: "valheim.example.com",
+						PrivateKeySecretName: "valheim-server-aws-ssh",
+						InstanceID:           "i-1234567890abcdef0",
+					},
+				},
+			}
+		}
+
 		BeforeEach(func() {
 			By("creating a Valheim server deployment")
 			Expect(k8sClient.Create(ctx, deployment())).Should(Succeed())
@@ -68,85 +89,21 @@ var _ = Describe("ValheimVerticalScaler controller", func() {
 
 		It("should create successfully", func() {
 			By("creating ValheimVerticalScaler")
-			Expect(k8sClient.Create(ctx, &valheimv1beta1.ValheimVerticalScaler{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      vvsName,
-					Namespace: namespace.Name,
-				},
-				Spec: valheimv1beta1.ValheimVerticalScalerSpec{
-					K8sDeployment: valheimv1beta1.K8sDeployment{
-						Name: deploymentName,
-					},
-				},
-			})).Should(Succeed())
+			Expect(k8sClient.Create(ctx, defaultVVS())).Should(Succeed())
 
-			By("expecting Down phase")
+			By("expecting Ready phase")
 			Eventually(func() valheimv1beta1.Phase {
 				var vss valheimv1beta1.ValheimVerticalScaler
 				_ = k8sClient.Get(ctx, types.NamespacedName{Name: vvsName, Namespace: namespace.Name}, &vss)
 				return vss.Status.Phase
-			}).Should(Equal(valheimv1beta1.PhaseDown))
-		})
-
-		// TODO: Enable this behavior.
-		XIt("should detect when Deployment is deleted", func() {
-			By("creating ValheimVerticalScaler")
-			Expect(k8sClient.Create(ctx, &valheimv1beta1.ValheimVerticalScaler{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      vvsName,
-					Namespace: namespace.Name,
-				},
-				Spec: valheimv1beta1.ValheimVerticalScalerSpec{
-					K8sDeployment: valheimv1beta1.K8sDeployment{
-						Name: deploymentName,
-					},
-				},
-			})).Should(Succeed())
-
-			By("expecting Down phase")
-			Eventually(func() valheimv1beta1.Phase {
-				var vss valheimv1beta1.ValheimVerticalScaler
-				_ = k8sClient.Get(ctx, types.NamespacedName{Name: vvsName, Namespace: namespace.Name}, &vss)
-				return vss.Status.Phase
-			}).Should(Equal(valheimv1beta1.PhaseDown))
-
-			By("deleting Deployment")
-			Expect(k8sClient.Delete(ctx, deployment())).Should(Succeed())
-
-			By("expecting Error phase")
-			Eventually(func() valheimv1beta1.ValheimVerticalScalerStatus {
-				var vss valheimv1beta1.ValheimVerticalScaler
-				_ = k8sClient.Get(ctx, types.NamespacedName{Name: vvsName, Namespace: namespace.Name}, &vss)
-				return vss.Status
-			}).Should(MatchFields(IgnoreExtras, Fields{
-				"Phase": Equal(valheimv1beta1.PhaseError),
-				"Error": ContainSubstring(deploymentName),
-			}))
-
-			By("recreating Deployment")
-			Expect(k8sClient.Create(ctx, deployment())).Should(Succeed())
-
-			By("expecting Down phase")
-			Eventually(func() valheimv1beta1.Phase {
-				var vss valheimv1beta1.ValheimVerticalScaler
-				_ = k8sClient.Get(ctx, types.NamespacedName{Name: vvsName, Namespace: namespace.Name}, &vss)
-				return vss.Status.Phase
-			}).Should(Equal(valheimv1beta1.PhaseDown))
+			}).Should(Equal(valheimv1beta1.PhaseReady))
 		})
 
 		It("should error when referencing nonexistent Deployment", func() {
 			By("creating ValheimVerticalScaler")
-			Expect(k8sClient.Create(ctx, &valheimv1beta1.ValheimVerticalScaler{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      vvsName,
-					Namespace: namespace.Name,
-				},
-				Spec: valheimv1beta1.ValheimVerticalScalerSpec{
-					K8sDeployment: valheimv1beta1.K8sDeployment{
-						Name: "i-do-not-exist",
-					},
-				},
-			})).Should(Succeed())
+			vvs := defaultVVS()
+			vvs.Spec.K8sDeployment.Name = "i-do-not-exist"
+			Expect(k8sClient.Create(ctx, vvs)).Should(Succeed())
 
 			By("expecting Error phase")
 			Eventually(func() valheimv1beta1.ValheimVerticalScalerStatus {

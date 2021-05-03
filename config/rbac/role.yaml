@@ -7,6 +7,15 @@ metadata:
   name: manager-role
 rules:
 - apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
   - valheim.zingerweb.services
   resources:
   - valheimverticalscalers
@@ -18,12 +27,6 @@ rules:
   - patch
   - update
   - watch
-- apiGroups:
-  - valheim.zingerweb.services
-  resources:
-  - valheimverticalscalers/finalizers
-  verbs:
-  - update
 - apiGroups:
   - valheim.zingerweb.services
   resources:

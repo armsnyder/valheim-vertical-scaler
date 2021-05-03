@@ -31,7 +31,7 @@ type ValheimVerticalScalerStatus struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Basic state of the Valheim server.
-	//+kubebuilder:validation:Enum=Initializing;Error;ScalingUp;Up;ScalingDown;Down
+	//+kubebuilder:validation:Enum=Ready;Error;ScalingUp;ScalingDown
 	//+optional
 	Phase Phase `json:"phase,omitempty"`
 
@@ -47,7 +47,8 @@ type ValheimVerticalScalerStatus struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:shortName=vvs
-//+kubebuilder:printcolumn:name="Phase",type=string,JSONPath=`.status.state`
+//+kubebuilder:printcolumn:name="Scale",type=string,JSONPath=`.spec.scale`
+//+kubebuilder:printcolumn:name="Phase",type=string,JSONPath=`.status.phase`
 
 // ValheimVerticalScaler is the Schema for the valheimverticalscalers API
 type ValheimVerticalScaler struct {
@@ -74,12 +75,10 @@ func init() {
 type Phase string
 
 const (
-	PhaseInitializing Phase = "Initializing"
-	PhaseError        Phase = "Error"
-	PhaseScalingUp    Phase = "ScalingUp"
-	PhaseUp           Phase = "Up"
-	PhaseScalingDown  Phase = "ScalingDown"
-	PhaseDown         Phase = "Down"
+	PhaseReady       Phase = "Ready"
+	PhaseError       Phase = "Error"
+	PhaseScalingUp   Phase = "ScalingUp"
+	PhaseScalingDown Phase = "ScalingDown"
 )
 
 type K8sDeployment struct {
@@ -95,17 +94,27 @@ type K8sDeployment struct {
 
 type AWS struct {
 	// Region of the EC2 instance.
+	//+kubebuilder:validation:MinLength=1
+	//+kubebuilder:validation:Pattern=`^[a-z]{2}-[a-z]{4,}-\d$`
 	Region string `json:"region"`
 
 	// Advertised domain of the server. Must live in Route53.
+	//+kubebuilder:validation:MinLength=1
+	//+kubebuilder:validation:Pattern=`^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$`
 	Domain string `json:"domain"`
 
 	// Name of a Secret containing the keys "accessKeyId" and "secretAccessKey".
+	//+kubebuilder:validation:MinLength=1
+	//+kubebuilder:validation:Pattern=`^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$`
 	CredentialSecretName string `json:"credentialSecretName"`
 
 	// Name of a Secret containing the private key for connecting to the EC2 instance.
+	//+kubebuilder:validation:MinLength=1
+	//+kubebuilder:validation:Pattern=`^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$`
 	PrivateKeySecretName string `json:"privateKeySecretName"`
 
 	// EC2 instance ID.
+	//+kubebuilder:validation:MinLength=1
+	//+kubebuilder:validation:Pattern=`^i-[a-z0-9]{17}$`
 	InstanceID string `json:"instanceID"`
 }

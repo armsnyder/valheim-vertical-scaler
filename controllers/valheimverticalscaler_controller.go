@@ -27,14 +27,10 @@ type ValheimVerticalScalerReconciler struct {
 
 //+kubebuilder:rbac:groups=valheim.zingerweb.services,resources=valheimverticalscalers,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=valheim.zingerweb.services,resources=valheimverticalscalers/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=valheim.zingerweb.services,resources=valheimverticalscalers/finalizers,verbs=update
+//+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
-// TODO(user): Modify the Reconcile function to compare the state specified by
-// the ValheimVerticalScaler object against the actual cluster state, and then
-// perform operations to make the cluster state reflect the state specified by
-// the user.
 //
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.7.2/pkg/reconcile
@@ -51,7 +47,7 @@ func (r *ValheimVerticalScalerReconciler) Reconcile(ctx context.Context, req ctr
 	// Then look up the referenced Deployment.
 	var deployment appsv1.Deployment
 	if err := r.Get(ctx, types.NamespacedName{Name: vvs.Spec.K8sDeployment.Name, Namespace: vvs.Namespace}, &deployment); err != nil {
-		r.Log.Error(err, "unable to get referenced Deployment")
+		log.Error(err, "unable to get referenced Deployment")
 		r.recorder.Event(&vvs, corev1.EventTypeWarning, "Deployment", err.Error())
 		// Ignore NotFound errors since they will not resolve on their own.
 		if errors.IsNotFound(err) {
@@ -62,7 +58,7 @@ func (r *ValheimVerticalScalerReconciler) Reconcile(ctx context.Context, req ctr
 
 	log.V(1).Info("found referenced deployment")
 
-	if err := r.updatePhase(ctx, &vvs, valheimv1beta1.PhaseDown); err != nil {
+	if err := r.updatePhase(ctx, &vvs, valheimv1beta1.PhaseReady); err != nil {
 		return genutil.RequeueWithError(ctx, err)
 	}
 
