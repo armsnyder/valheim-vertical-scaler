@@ -1,4 +1,4 @@
-module github.com/armsnyder/valheim-server
+module github.com/armsnyder/valheim-vertical-scaler
 
 go 1.15
 

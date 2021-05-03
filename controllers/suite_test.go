@@ -15,7 +15,7 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	valheimv1beta1 "github.com/armsnyder/valheim-server/api/v1beta1"
+	valheimv1beta1 "github.com/armsnyder/valheim-vertical-scaler/api/v1beta1"
 	//+kubebuilder:scaffold:imports
 )
 

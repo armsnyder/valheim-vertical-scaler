@@ -13,8 +13,8 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	valheimv1beta1 "github.com/armsnyder/valheim-server/api/v1beta1"
-	"github.com/armsnyder/valheim-server/genutil"
+	valheimv1beta1 "github.com/armsnyder/valheim-vertical-scaler/api/v1beta1"
+	"github.com/armsnyder/valheim-vertical-scaler/genutil"
 )
 
 // ValheimVerticalScalerReconciler reconciles a ValheimVerticalScaler object

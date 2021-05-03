@@ -12,7 +12,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	valheimv1beta1 "github.com/armsnyder/valheim-server/api/v1beta1"
+	valheimv1beta1 "github.com/armsnyder/valheim-vertical-scaler/api/v1beta1"
 )
 
 var _ = Describe("ValheimVerticalScaler controller", func() {

@@ -15,8 +15,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	valheimv1beta1 "github.com/armsnyder/valheim-server/api/v1beta1"
-	"github.com/armsnyder/valheim-server/controllers"
+	valheimv1beta1 "github.com/armsnyder/valheim-vertical-scaler/api/v1beta1"
+	"github.com/armsnyder/valheim-vertical-scaler/controllers"
 	//+kubebuilder:scaffold:imports
 )
 

@@ -29,7 +29,7 @@ spec:
         - /manager
         args:
         - --leader-elect
-        image: armsnyder/valheim-server-controller:latest
+        image: armsnyder/valheim-vertical-scaler-controller:latest
         name: manager
         securityContext:
           allowPrivilegeEscalation: false

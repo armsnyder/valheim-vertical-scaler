@@ -1,6 +1,6 @@
 
 # Image URL to use all building/pushing image targets
-IMG ?= armsnyder/valheim-server-controller:latest
+IMG ?= armsnyder/valheim-vertical-scaler-controller:latest
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:trivialVersions=true,preserveUnknownFields=false"
 
@@ -91,8 +91,8 @@ undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/confi
 	$(KUSTOMIZE) build config/default | kubectl delete -f -
 
 redeploy: ## Redeploy controller from the K8s cluster specified in ~/.kube/config, to pull the latest image.
-	kubectl rollout restart deployment valheim-server-controller-manager -n valheim-server-system
-	kubectl rollout status deployment valheim-server-controller-manager -n valheim-server-system --timeout=2m
+	kubectl rollout restart deployment valheim-vertical-scaler-controller-manager -n valheim-vertical-scaler-system
+	kubectl rollout status deployment valheim-vertical-scaler-controller-manager -n valheim-vertical-scaler-system --timeout=2m
 
 CONTROLLER_GEN = $(shell pwd)/bin/controller-gen
 controller-gen: ## Download controller-gen locally if necessary.

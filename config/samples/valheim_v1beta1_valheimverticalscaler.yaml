@@ -5,7 +5,7 @@ metadata:
 spec:
   scale: Down
   k8sDeployment:
-    name: valheim-server
+    name: valheim-vertical-scaler
   aws:
     region: us-west-2
     credentialSecretName: valheim-server-aws-creds

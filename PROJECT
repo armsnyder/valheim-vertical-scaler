@@ -1,8 +1,8 @@
 domain: zingerweb.services
 layout:
 - go.kubebuilder.io/v3
-projectName: valheim-server
-repo: github.com/armsnyder/valheim-server
+projectName: valheim-vertical-scaler
+repo: github.com/armsnyder/valheim-vertical-scaler
 resources:
 - api:
     crdVersion: v1
@@ -11,6 +11,6 @@ resources:
   domain: zingerweb.services
   group: valheim
   kind: ValheimVerticalScaler
-  path: github.com/armsnyder/valheim-server/api/v1beta1
+  path: github.com/armsnyder/valheim-vertical-scaler/api/v1beta1
   version: v1beta1
 version: "3"
