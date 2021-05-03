@@ -1,19 +1,3 @@
-/*
-Copyright 2021.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
 package v1beta1
 
 import (
@@ -35,10 +19,10 @@ type ValheimVerticalScalerSpec struct {
 	Scale string `json:"scale,omitempty"`
 
 	// Configuration pertaining to AWS.
-	AWS AWSConfig `json:"aws"`
+	AWS AWS `json:"aws"`
 
 	// Configuration pertaining to the Valheim server Deployment in the local Kubernetes cluster.
-	K8sDeployment K8sDeploymentConfig `json:"k8sDeployment"`
+	K8sDeployment K8sDeployment `json:"k8sDeployment"`
 }
 
 // ValheimVerticalScalerStatus defines the observed state of ValheimVerticalScaler
@@ -47,19 +31,23 @@ type ValheimVerticalScalerStatus struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Basic state of the Valheim server.
-	//+kubebuilder:validation:Enum=Unknown;Error;ScalingUp;Up;ScalingDown;Down
-	//+kubebuilder:default=Unknown
+	//+kubebuilder:validation:Enum=Initializing;Error;ScalingUp;Up;ScalingDown;Down
 	//+optional
-	State State `json:"state"`
+	Phase Phase `json:"phase,omitempty"`
 
 	// Human readable error message if the scaling has reached an error end state.
 	//+optional
 	Error string `json:"error,omitempty"`
+
+	// The generation of the ValheimVerticalScaler object that this status is for.
+	//+optional
+	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:shortName=vvs
+//+kubebuilder:printcolumn:name="Phase",type=string,JSONPath=`.status.state`
 
 // ValheimVerticalScaler is the Schema for the valheimverticalscalers API
 type ValheimVerticalScaler struct {
@@ -83,18 +71,18 @@ func init() {
 	SchemeBuilder.Register(&ValheimVerticalScaler{}, &ValheimVerticalScalerList{})
 }
 
-type State string
+type Phase string
 
 const (
-	StateUnknown     State = "Unknown"
-	StateError       State = "Error"
-	StateScalingUp   State = "ScalingUp"
-	StateUp          State = "Up"
-	StateScalingDown State = "ScalingDown"
-	StateDown        State = "Down"
+	PhaseInitializing Phase = "Initializing"
+	PhaseError        Phase = "Error"
+	PhaseScalingUp    Phase = "ScalingUp"
+	PhaseUp           Phase = "Up"
+	PhaseScalingDown  Phase = "ScalingDown"
+	PhaseDown         Phase = "Down"
 )
 
-type K8sDeploymentConfig struct {
+type K8sDeployment struct {
 	// Name of the Deployment for the Valheim server.
 	Name string `json:"name"`
 
@@ -105,7 +93,7 @@ type K8sDeploymentConfig struct {
 	GameFilesVolumeName string `json:"gameFilesVolumeName,omitempty"`
 }
 
-type AWSConfig struct {
+type AWS struct {
 	// Region of the EC2 instance.
 	Region string `json:"region"`
 

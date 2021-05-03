@@ -18,7 +18,11 @@ spec:
     singular: valheimverticalscaler
   scope: Namespaced
   versions:
-  - name: v1beta1
+  - additionalPrinterColumns:
+    - jsonPath: .status.state
+      name: Phase
+      type: string
+    name: v1beta1
     schema:
       openAPIV3Schema:
         description: ValheimVerticalScaler is the Schema for the valheimverticalscalers
@@ -100,11 +104,15 @@ spec:
                 description: Human readable error message if the scaling has reached
                   an error end state.
                 type: string
-              state:
-                default: Unknown
+              observedGeneration:
+                description: The generation of the ValheimVerticalScaler object that
+                  this status is for.
+                format: int64
+                type: integer
+              phase:
                 description: Basic state of the Valheim server.
                 enum:
-                - Unknown
+                - Initializing
                 - Error
                 - ScalingUp
                 - Up

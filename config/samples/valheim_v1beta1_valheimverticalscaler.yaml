@@ -6,9 +6,8 @@ spec:
   scale: Down
   k8sDeployment:
     name: valheim-server
-    gameFilesVolumeName: gamefiles
   aws:
-    region: us-west-1
+    region: us-west-2
     credentialSecretName: valheim-server-aws-creds
     domain: valheim.example.com
     instanceID: i-1234567890abcdef0
