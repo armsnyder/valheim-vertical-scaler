@@ -128,5 +128,40 @@ var _ = Describe("ValheimVerticalScaler controller", func() {
 				"Type":   Equal(corev1.EventTypeWarning),
 			})))
 		})
+
+		It("should detect when Deployment is deleted", func() {
+			By("creating ValheimVerticalScaler")
+			Expect(k8sClient.Create(ctx, defaultVVS())).Should(Succeed())
+
+			By("expecting Ready phase")
+			Eventually(func() valheimv1beta1.Phase {
+				var vss valheimv1beta1.ValheimVerticalScaler
+				_ = k8sClient.Get(ctx, types.NamespacedName{Name: vvsName, Namespace: namespace.Name}, &vss)
+				return vss.Status.Phase
+			}).Should(Equal(valheimv1beta1.PhaseReady))
+
+			By("deleting Deployment")
+			Expect(k8sClient.Delete(ctx, deployment())).Should(Succeed())
+
+			By("expecting Error phase")
+			Eventually(func() valheimv1beta1.ValheimVerticalScalerStatus {
+				var vss valheimv1beta1.ValheimVerticalScaler
+				_ = k8sClient.Get(ctx, types.NamespacedName{Name: vvsName, Namespace: namespace.Name}, &vss)
+				return vss.Status
+			}).Should(MatchFields(IgnoreExtras, Fields{
+				"Phase": Equal(valheimv1beta1.PhaseError),
+				"Error": ContainSubstring(deploymentName),
+			}))
+
+			By("recreating Deployment")
+			Expect(k8sClient.Create(ctx, deployment())).Should(Succeed())
+
+			By("expecting Ready phase")
+			Eventually(func() valheimv1beta1.Phase {
+				var vss valheimv1beta1.ValheimVerticalScaler
+				_ = k8sClient.Get(ctx, types.NamespacedName{Name: vvsName, Namespace: namespace.Name}, &vss)
+				return vss.Status.Phase
+			}).Should(Equal(valheimv1beta1.PhaseReady))
+		})
 	})
 })
